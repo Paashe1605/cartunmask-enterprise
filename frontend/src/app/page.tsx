@@ -1,13 +1,31 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Search, Mic, ShieldAlert, CheckCircle, TrendingDown } from 'lucide-react';
+import { 
+  Search, 
+  Mic, 
+  ShieldAlert, 
+  CheckCircle, 
+  TrendingDown, 
+  Sun, 
+  Moon,
+  AlertTriangle,
+  Info
+} from 'lucide-react';
+import { 
+  PieChart, 
+  Pie, 
+  Cell, 
+  ResponsiveContainer,
+  Text
+} from 'recharts';
 
 export default function Dashboard() {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(true); // Defaulting to dark as per original vibe but with toggle
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,196 +55,275 @@ export default function Dashboard() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans p-6 md:p-12">
-      <div className="max-w-6xl mx-auto">
-        
-        {/* STEP 3: Hero Header & Search Bar */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500 mb-4 tracking-tight">
-            CartUnmask
-          </h1>
-          <p className="text-xl text-slate-400 font-light mb-8">
-            The Multilingual E-commerce Truth Engine
-          </p>
+  const getScoreColor = (score: number) => {
+    if (score < 40) return "#ef4444"; // Red-500
+    if (score < 75) return "#f59e0b"; // Amber-500
+    return "#10b981"; // Emerald-500
+  };
 
-          <form onSubmit={handleSearch} className="max-w-3xl mx-auto relative flex items-center">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Search className="h-6 w-6 text-slate-500" />
-            </div>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Enter product URL or name to analyze..."
-              className="w-full bg-slate-900 border border-slate-700 text-white rounded-full py-5 pl-14 pr-32 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-lg shadow-2xl transition-all"
-            />
-            <div className="absolute right-2 flex space-x-2">
-              <button
-                type="button"
-                className="p-3 bg-slate-800 hover:bg-slate-700 rounded-full text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500"
-                title="Voice Search"
-              >
-                <Mic className="h-5 w-5" />
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading || !query}
-                className="px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white rounded-full font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Scan
-              </button>
-            </div>
-          </form>
+  const TrustScoreChart = ({ score }: { score: number }) => {
+    const data = [
+      { name: 'Score', value: score },
+      { name: 'Remaining', value: 100 - score },
+    ];
+    const color = getScoreColor(score);
+
+    return (
+      <div className="h-48 w-full relative flex items-center justify-center">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="80%"
+              startAngle={180}
+              endAngle={0}
+              innerRadius={70}
+              outerRadius={100}
+              paddingAngle={0}
+              dataKey="value"
+              stroke="none"
+            >
+              <Cell fill={color} />
+              <Cell fill={isDark ? "#1e293b" : "#e2e8f0"} />
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="absolute bottom-[20%] text-center">
+          <span className="text-4xl font-bold block" style={{ color }}>{score}</span>
+          <span className={`text-xs uppercase tracking-widest font-semibold ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Trust Score</span>
         </div>
+      </div>
+    );
+  };
 
-        {error && (
-          <div className="max-w-3xl mx-auto mb-8 p-4 bg-red-900/30 border border-red-800 rounded-lg text-red-400 text-center">
-            {error}
-          </div>
-        )}
-
-        {/* STEP 4: Loading State */}
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center space-y-6 my-20">
-            <div className="relative w-24 h-24">
-              <div className="absolute inset-0 rounded-full border-t-4 border-teal-500 animate-spin"></div>
-              <div className="absolute inset-2 rounded-full border-t-4 border-blue-500 animate-spin animation-delay-200" style={{ animationDelay: '0.2s' }}></div>
-              <div className="absolute inset-4 rounded-full border-t-4 border-slate-500 animate-spin animation-delay-400" style={{ animationDelay: '0.4s' }}></div>
+  return (
+    <div className={isDark ? 'dark' : ''}>
+      <main className="min-h-screen transition-colors duration-300 bg-gray-50 text-gray-900 dark:bg-slate-950 dark:text-slate-50 font-sans p-6 md:p-12">
+        <div className="max-w-6xl mx-auto">
+          
+          {/* Theme Toggle & Header */}
+          <div className="flex justify-between items-center mb-12">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-emerald-500 rounded-lg shadow-lg"></div>
+              <h1 className="text-2xl font-bold tracking-tight">CartUnmask</h1>
             </div>
-            <p className="text-lg text-teal-400 font-medium animate-pulse tracking-wider">
-              Deploying AI Swarm... Scanning 30+ Marketplaces...
+            <button 
+              onClick={() => setIsDark(!isDark)}
+              className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all text-gray-600 dark:text-slate-400"
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+          </div>
+
+          {/* Hero Section */}
+          <div className="text-center mb-16">
+            <h2 className="text-5xl md:text-6xl font-extrabold mb-6 tracking-tight">
+              Shop with <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500">Certainty.</span>
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-slate-400 font-light mb-10 max-w-2xl mx-auto">
+              Unmask dark patterns, verify reviews, and find the real best deals across the global marketplace.
             </p>
+
+            <form onSubmit={handleSearch} className="max-w-3xl mx-auto relative group">
+              <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+                <Search className="h-6 w-6 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+              </div>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Paste product link or search item..."
+                className="w-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white rounded-full py-6 pl-16 pr-44 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-lg shadow-xl transition-all"
+              />
+              <div className="absolute right-3 inset-y-0 flex items-center gap-3">
+                <button
+                  type="button"
+                  className="p-3 text-gray-400 hover:text-blue-500 transition-colors"
+                  title="Voice Search"
+                >
+                  <Mic className="h-6 w-6" />
+                </button>
+                <button
+                  type="submit"
+                  disabled={isLoading || !query}
+                  className="px-8 py-3.5 bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 text-white rounded-full font-bold shadow-lg shadow-blue-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  {isLoading ? "Scanning..." : "Scan Now"}
+                </button>
+              </div>
+            </form>
           </div>
-        )}
 
-        {/* STEP 5: Results Dashboard */}
-        {result && !isLoading && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in-up">
-            
-            {/* Left Column: The Authenticator */}
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-8 shadow-xl backdrop-blur-sm flex flex-col space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-                <h2 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
-                  <ShieldAlert className="text-amber-500 h-6 w-6" />
-                  The Authenticator
-                </h2>
-                <div className="bg-slate-950 px-4 py-2 rounded-full border border-slate-700 flex items-center gap-2 shadow-inner">
-                  <span className="text-sm text-slate-400 uppercase tracking-wider font-semibold">Trust Score</span>
-                  <span className={`text-2xl font-black ${
-                    result.authenticity?.trust_score >= 80 ? 'text-emerald-400' :
-                    result.authenticity?.trust_score >= 50 ? 'text-amber-400' : 'text-red-500'
-                  }`}>
-                    {result.authenticity?.trust_score}/100
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-sm uppercase tracking-widest text-slate-500 mb-2 font-semibold">Bot Pattern Summary</h3>
-                <p className="text-slate-300 leading-relaxed bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
-                  {result.authenticity?.review_analysis?.bot_pattern_summary || "No specific patterns detected."}
-                </p>
-              </div>
-
-              {result.authenticity?.dark_patterns?.detected_tricks && result.authenticity.dark_patterns.detected_tricks.length > 0 && (
-                <div>
-                  <h3 className="text-sm uppercase tracking-widest text-slate-500 mb-3 font-semibold">Detected Dark Patterns</h3>
-                  <div className="space-y-3">
-                    {result.authenticity.dark_patterns.detected_tricks.map((trick: string, idx: number) => (
-                      <div key={idx} className="flex items-start gap-3 bg-red-950/20 border border-red-900/50 p-3 rounded-lg">
-                        <ShieldAlert className="text-red-500 h-5 w-5 mt-0.5 flex-shrink-0" />
-                        <span className="text-red-200 text-sm">{trick}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+          {error && (
+            <div className="max-w-3xl mx-auto mb-8 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 rounded-2xl text-red-600 dark:text-red-400 text-center flex items-center justify-center gap-2">
+              <AlertTriangle size={18} />
+              {error}
             </div>
+          )}
 
-            {/* Right Column: The Deal Hunter */}
-            <div className="flex flex-col space-y-8">
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center space-y-8 my-20">
+              <div className="relative">
+                <div className="w-20 h-20 border-4 border-gray-200 dark:border-slate-800 border-t-blue-600 rounded-full animate-spin"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-10 h-10 bg-blue-600/10 rounded-full animate-pulse"></div>
+                </div>
+              </div>
+              <div className="text-center">
+                <p className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-emerald-500">
+                  Analyzing Marketplace Data
+                </p>
+                <p className="text-gray-500 dark:text-slate-500 mt-2">Checking reviews, pricing history, and bot patterns...</p>
+              </div>
+            </div>
+          )}
+
+          {/* Results Dashboard */}
+          {result && !isLoading && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
               
-              {/* Best Deal Card */}
-              {result.deals?.best_overall_deal && (
-                <div className="bg-gradient-to-br from-teal-900/40 to-slate-900 border border-teal-800/50 rounded-2xl p-8 shadow-xl relative overflow-hidden">
-                  <div className="absolute top-0 right-0 bg-teal-500 text-slate-950 text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
-                    Top Pick
+              {/* Authenticator Card */}
+              <div className="lg:col-span-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                    <ShieldAlert className="text-blue-600 dark:text-blue-400 h-6 w-6" />
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-100 flex items-center gap-2 mb-6">
-                    <TrendingDown className="text-teal-400 h-6 w-6" />
-                    The Deal Hunter
-                  </h2>
-                  
-                  <div className="bg-slate-950/50 p-6 rounded-xl border border-slate-800">
-                    <div className="flex justify-between items-end mb-4">
-                      <div>
-                        <p className="text-slate-400 text-sm mb-1 uppercase tracking-wider">Platform</p>
-                        <p className="text-2xl font-bold text-white">{result.deals.best_overall_deal.platform}</p>
+                  <h3 className="text-xl font-bold">The Authenticator</h3>
+                </div>
+
+                <TrustScoreChart score={result.authenticity?.trust_score || 0} />
+
+                <div className="mt-8 space-y-6">
+                  <div>
+                    <h4 className="text-xs uppercase tracking-widest text-gray-500 dark:text-slate-500 mb-3 font-bold flex items-center gap-2">
+                      <Info size={14} />
+                      Bot Pattern Analysis
+                    </h4>
+                    <p className="text-gray-700 dark:text-slate-300 leading-relaxed bg-gray-50 dark:bg-slate-950/50 p-4 rounded-2xl border border-gray-100 dark:border-slate-800/50 text-sm">
+                      {result.authenticity?.review_analysis?.bot_pattern_summary || "No suspicious patterns detected in recent reviews."}
+                    </p>
+                  </div>
+
+                  {result.authenticity?.dark_patterns?.detected_tricks && result.authenticity.dark_patterns.detected_tricks.length > 0 && (
+                    <div>
+                      <h4 className="text-xs uppercase tracking-widest text-red-500 mb-3 font-bold flex items-center gap-2">
+                        <AlertTriangle size={14} />
+                        Dark Patterns Found
+                      </h4>
+                      <div className="space-y-2">
+                        {result.authenticity.dark_patterns.detected_tricks.map((trick: string, idx: number) => (
+                          <div key={idx} className="flex items-center gap-3 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 p-3 rounded-xl">
+                            <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                            <span className="text-red-700 dark:text-red-300 text-xs font-medium">{trick}</span>
+                          </div>
+                        ))}
                       </div>
-                      <div className="text-right">
-                        <p className="text-slate-400 text-sm mb-1 uppercase tracking-wider">Final Price</p>
-                        <p className="text-3xl font-black text-teal-400">{result.deals.best_overall_deal.final_effective_price}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Deal Hunter Column */}
+              <div className="lg:col-span-2 flex flex-col gap-8">
+                
+                {/* Best Deal Hero Card */}
+                {result.deals?.best_overall_deal && (
+                  <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm relative overflow-hidden group">
+                    <div className="absolute top-0 right-0">
+                      <div className="bg-gradient-to-r from-blue-600 to-emerald-500 text-white text-[10px] font-black px-4 py-1.5 rounded-bl-2xl uppercase tracking-widest shadow-lg">
+                        Best Value
                       </div>
                     </div>
                     
-                    <div className="flex justify-between items-center border-t border-slate-800 pt-4 mt-4">
-                      <div className="text-sm">
-                        <span className="text-slate-500">Base Price: </span>
-                        <span className="text-slate-300 line-through">{result.deals.best_overall_deal.current_price}</span>
+                    <div className="flex items-center gap-3 mb-8">
+                      <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
+                        <TrendingDown className="text-emerald-600 dark:text-emerald-400 h-6 w-6" />
                       </div>
-                      <div className="text-sm flex items-center gap-1">
-                        <span className="text-slate-500">Card Discount: </span>
-                        <span className="text-emerald-400 font-medium">{result.deals.best_overall_deal.card_discount_available}</span>
+                      <h3 className="text-xl font-bold">The Deal Hunter</h3>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-gray-50 dark:bg-slate-950 p-8 rounded-3xl border border-gray-100 dark:border-slate-800">
+                      <div>
+                        <p className="text-gray-500 dark:text-slate-500 text-xs mb-1 uppercase tracking-widest font-bold">Recommended Platform</p>
+                        <p className="text-3xl font-black">{result.deals.best_overall_deal.platform}</p>
+                        <div className="mt-4 flex items-center gap-2">
+                          <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold rounded-full">Verified Price</span>
+                        </div>
+                      </div>
+                      
+                      <div className="md:text-right">
+                        <p className="text-gray-500 dark:text-slate-500 text-xs mb-1 uppercase tracking-widest font-bold">Final Effective Price</p>
+                        <p className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500">
+                          {result.deals.best_overall_deal.final_effective_price}
+                        </p>
+                        <p className="text-sm text-gray-400 mt-2">
+                          Original: <span className="line-through">{result.deals.best_overall_deal.current_price}</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 flex flex-wrap gap-4">
+                      <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                        <CheckCircle size={14} className="text-blue-600 dark:text-blue-400" />
+                        <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
+                          Card Discount: {result.deals.best_overall_deal.card_discount_available}
+                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Market Comparisons */}
-              {result.deals?.market_comparisons && result.deals.market_comparisons.length > 0 && (
-                <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-8 shadow-xl backdrop-blur-sm flex-1">
-                  <h3 className="text-sm uppercase tracking-widest text-slate-500 mb-4 font-semibold">Market Comparisons</h3>
-                  <div className="space-y-4">
-                    {result.deals.market_comparisons.map((comp: any, idx: number) => (
-                      <div key={idx} className="flex justify-between items-center p-4 bg-slate-800/40 rounded-xl border border-slate-700/50 hover:bg-slate-800/80 transition-colors">
-                        <div className="flex flex-col">
-                          <span className="font-semibold text-slate-200">{comp.platform || comp}</span>
-                          {comp.details && <span className="text-xs text-slate-500 mt-1">{comp.details}</span>}
+                {/* Market Comparisons */}
+                {result.deals?.market_comparisons && result.deals.market_comparisons.length > 0 && (
+                  <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm">
+                    <h4 className="text-sm uppercase tracking-widest text-gray-500 dark:text-slate-500 mb-6 font-bold">Price Benchmarks</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {result.deals.market_comparisons.map((comp: any, idx: number) => (
+                        <div key={idx} className="flex justify-between items-center p-5 bg-gray-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-slate-800 hover:border-blue-500/30 transition-colors group">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-gray-700 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                              {comp.platform || comp}
+                            </span>
+                            {comp.details && <span className="text-[10px] text-gray-400 dark:text-slate-500 mt-1">{comp.details}</span>}
+                          </div>
+                          {comp.current_price && (
+                            <span className="font-mono font-bold text-gray-900 dark:text-slate-100">{comp.current_price}</span>
+                          )}
                         </div>
-                        {comp.current_price && (
-                          <span className="font-mono text-slate-300">{comp.current_price}</span>
-                        )}
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
+                )}
+              </div>
+              
+              {/* Verdict Bar */}
+              <div className="lg:col-span-3 bg-gradient-to-r from-blue-600 to-emerald-500 rounded-3xl p-[1px] shadow-2xl">
+                <div className="bg-white dark:bg-slate-950 rounded-[23px] p-8 md:p-10 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <div className="h-[1px] w-8 bg-gray-200 dark:bg-slate-800"></div>
+                    <h4 className="text-xs uppercase tracking-[0.3em] text-gray-400 dark:text-slate-500 font-black">AI Final Verdict</h4>
+                    <div className="h-[1px] w-8 bg-gray-200 dark:bg-slate-800"></div>
+                  </div>
+                  <p className="text-2xl md:text-4xl font-extrabold tracking-tight leading-tight">
+                    "{result.authenticity?.final_verdict || "Analyze more data to get a comprehensive verdict."}"
+                  </p>
                 </div>
-              )}
-            </div>
-            
-            {/* Bottom Row: Final Verdict */}
-            <div className="lg:col-span-2 bg-gradient-to-r from-blue-900/30 via-slate-900 to-teal-900/30 border border-slate-700 rounded-2xl p-8 text-center mt-4">
-              <h2 className="text-lg uppercase tracking-widest text-slate-400 mb-3 font-semibold flex items-center justify-center gap-2">
-                <CheckCircle className="text-blue-400 h-5 w-5" />
-                Final Verdict
-              </h2>
-              <p className="text-2xl md:text-3xl font-light text-slate-100 leading-snug">
-                {result.authenticity?.final_verdict || "Proceed with caution, compare alternatives."}
-              </p>
-            </div>
+              </div>
 
-          </div>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
+      </main>
       
       <style dangerouslySetInnerHTML={{__html: `
-        @keyframes fade-in-up {
-          0% { opacity: 0; transform: translateY(20px); }
-          100% { opacity: 1; transform: translateY(0); }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-in-up {
-          animation: fade-in-up 0.6s ease-out forwards;
+        .animate-in {
+          animation: fadeIn 0.5s ease-out forwards;
         }
       `}} />
     </div>

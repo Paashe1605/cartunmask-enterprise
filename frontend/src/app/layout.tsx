@@ -29,7 +29,7 @@ export default function RootLayout({
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-8 h-8 text-[#4285F4]" />
                 <span className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
-                  Kavach <span className="text-[#4285F4]">AI</span>
+                  CARTUNMASK <span className="text-[#4285F4]">AI</span>
                 </span>
               </div>
               <div className="flex items-center gap-4">

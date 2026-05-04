@@ -1,18 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-    /* This link tells Tailwind v4 to sync with next-themes '.dark' class */
+    /* Tells Tailwind v4 that dark: utilities activate under .dark ancestor */
     --variant-dark: .dark &;
-}
-
-@layer base {
-    body {
-        /* Set default light colors and smooth transitions */
-        @apply bg-slate-50 text-slate-900 transition-colors duration-300;
-    }
-
-    /* Explicitly define what happens when the .dark class is active */
-    .dark body {
-        @apply bg-slate-950 text-slate-100;
-    }
 }

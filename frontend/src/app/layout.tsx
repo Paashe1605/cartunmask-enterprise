@@ -11,8 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Kavach AI | Enterprise-Grade Shopping Integrity",
-  description: "Advanced marketplace analysis for dark patterns and marketplace integrity.",
+  title: "CartUnmask AI | Enterprise-Grade Shopping Integrity",
+  description:
+    "Advanced marketplace analysis for dark patterns and marketplace integrity.",
 };
 
 export default function RootLayout({
@@ -22,9 +23,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col`}>
+      <body
+        className={`${inter.variable} font-sans antialiased bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col`}
+      >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
+          <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md transition-colors duration-300">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-8 h-8 text-[#4285F4]" />
@@ -40,9 +43,7 @@ export default function RootLayout({
               </div>
             </div>
           </header>
-          <main className="flex-1">
-            {children}
-          </main>
+          <main className="flex-1">{children}</main>
         </ThemeProvider>
       </body>
     </html>
